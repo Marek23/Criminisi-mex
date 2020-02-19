@@ -641,14 +641,21 @@ void mexFunction(int numOut, mxArray *pmxOut[],
         C   [i%nx][i/nx] = (float)C_i   [i];
     }
 
-    padarray2d(nx,ny,p_r,C,pC);
-
     // printfFnc("Koniec przepisania zmiennych. \n");
+	
+	double power = 1;
+	
     int prev     = -1;
     int done     = -1;
     int giveInfo = 0;
     while (allOne(nx,ny,mask) == 0 && prev != sumMatrix(nx,ny,mask) && done != 1)
     {
+		power = power + 0.0005;
+
+		double newC = exp(1-power);
+		//double newC = 0;
+		//printfFnc("%f \n", newC);
+		
         if (giveInfo == 10)
         {
             printfFnc("Zaawansowanie: %f \n", sumMatrix(nx,ny,mask)/nx/ny*100);
@@ -657,6 +664,7 @@ void mexFunction(int numOut, mxArray *pmxOut[],
         giveInfo++;
         prev = sumMatrix(nx,ny,mask);
         padarray2d(nx,ny,p_r,mask,pmask);
+		padarray2d(nx,ny,p_r,C,pC);
         padarray3d(nx,ny,nz,p_r,I,PI);
         //printfFnc("padArray. \n");
         imerode(nx,ny,  mask,e1mask,1);
@@ -872,10 +880,13 @@ void mexFunction(int numOut, mxArray *pmxOut[],
                         && maxY-p_r+y < ny
                         && mask[maxX+x-p_r][maxY+y-p_r] == 0)
                         {
+                            //printfFnc("Aktualizacja obrazu. \n");
                             I[maxX-p_r+x][maxY-p_r+y][0] = qI[x][y][0];
                             I[maxX-p_r+x][maxY-p_r+y][1] = qI[x][y][1];
                             I[maxX-p_r+x][maxY-p_r+y][2] = qI[x][y][2];
-                            //printfFnc("Aktualizacja obrazu. \n");
+
+							//printfFnc("Aktualizacja pewności pikselsa \n");
+							C[maxX-p_r+x][maxY-p_r+y] = newC;
                         }
                         if(maxX+x-p_r > -1
                         && maxX+x-p_r < nx
