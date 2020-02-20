@@ -12,11 +12,10 @@ s_r  = 10000;
 %%parametry
 alfa = 0.2;
 
-C    = ones([size(I,1) size(I,2)]);
-
 mask = double(1-((I(:,:,1) == 0 ) & ...
                 ( I(:,:,2) == 1) & ...
                 ( I(:,:,3) == 0)));
+C = mask;
 
 [nx,ny,nz] = size(I);
 
